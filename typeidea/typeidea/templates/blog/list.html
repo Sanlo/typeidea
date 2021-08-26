@@ -1,12 +1,43 @@
-<ul>
-    {% for post in post_list %}
-    <li>
-        <a href="/post/{{ post.id }}.html">{{ post.title }}</a>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>博客系统</title>
+    </head>
+    <body>
         <div>
-            <span>作者：{{ post.owner.username }}</span>
-            <span>分类：{{ post.category.name }}</span>
+            顶部分类： {% for cate in navs %}
+            <a href="/category/{{cate.id}}/">{{ cate.name }}</a>
+            {% endfor %}
         </div>
-        <p>{{ post.desc }}</p>
-    </li>
-    {% endfor %}
-</ul>
+
+        {% if tag %} 标签页：{{ tag.name }} {% endif %} {%if category %}
+        分类页：{{ category.name }} {% endif %}
+
+        <ul>
+            {% for post in post_list %}
+            <li>
+                <a href="/post/{{ post.id }}.html">{{ post.title }}</a>
+                <div>
+                    <span>作者：{{ post.owner.username }}</span>
+                    <span>分类：{{ post.category.name }}</span>
+                </div>
+                <p>{{ post.desc }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+        <hr />
+        <div>
+            底部分类： {% for cate in categories %}
+            <a href="/categories/{{ cate.id }}">{{ cate.name }}</a>
+            {% endfor %}
+        </div>
+        <div>
+            侧边栏展示： {% for sidebar in sidebars %}
+            <h4>{{ sidebar.title }}</h4>
+            {{ sidebar.content }} {% endfor %}
+        </div>
+    </body>
+</html>

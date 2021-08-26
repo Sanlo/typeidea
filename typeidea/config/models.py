@@ -50,6 +50,10 @@ class SideBar(models.Model):
         User, on_delete=models.CASCADE, verbose_name='作者')
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
 
+    @classmethod
+    def get_all(cls):
+        return cls.objects.filter(status=cls.STATUS_SHOW)
+
     def __str__(self):
         return self.name
 
