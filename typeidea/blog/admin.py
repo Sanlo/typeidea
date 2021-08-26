@@ -7,7 +7,7 @@ from .models import Post, Category, Tag
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'status', 'is_nav', 'created_time')
+    list_display = ('name', 'status', 'is_nav', 'created_time', 'owner')
     fields = ('name', 'status', 'is_nav')
 
     def save_model(self, request, obj, form, change):
@@ -22,7 +22,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ('name', 'status', 'created_time')
+    list_display = ('name', 'status', 'created_time', 'owner')
     fields = ('name', 'status')
 
     def save_model(self, request, obj, form, change):
@@ -32,7 +32,8 @@ class TagAdmin(admin.ModelAdmin):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('title', 'category', 'status', 'created_time', 'operator')
+    list_display = ('title', 'category', 'status',
+                    'created_time', 'owner', 'operator')
     list_display_links = []
 
     list_filter = ['category', ]
@@ -51,7 +52,7 @@ class PostAdmin(admin.ModelAdmin):
     )
 
     def operator(self, obj):
-        return format_html('<a href="{}">编辑</a>', reverse('admin:blog_post_change', args=(obj, id, )))
+        return format_html('<a href="{}">编辑</a>', reverse('admin:blog_post_change', args=(obj.id, )))
 
     def save_model(self, request, obj, form, change):
         obj.owner = request.user
