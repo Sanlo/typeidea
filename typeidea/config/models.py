@@ -17,7 +17,7 @@ class Link(models.Model):
         range(1, 6), range(1, 6)), verbose_name='权重', help_text='权重越高顺序越靠前')
     owner = models.ForeignKey(
         User, on_delete=models.CASCADE, verbose_name='作者')
-    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
 
     class Meta:
         verbose_name = verbose_name_plural = '友链'
@@ -45,7 +45,7 @@ class SideBar(models.Model):
         default=STATUS_SHOW, choices=STATUS_ITEMS, verbose_name='状态')
     owner = models.ForeignKey(
         User, on_delete=models.CASCADE, verbose_name='作者')
-    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
 
     class Meta:
         verbose_name = verbose_name_plural = '侧边栏'
