@@ -14,9 +14,6 @@ class CategoryAdmin(admin.ModelAdmin):
         obj.owner = request.user
         return super(CategoryAdmin, self).save_model(request, obj, form, change)
 
-    def __str__(self):
-        return self.name
-
     def post_count(self, obj):
         return obj.post_set.count()
 
