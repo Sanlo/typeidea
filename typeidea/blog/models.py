@@ -81,6 +81,8 @@ class Post(models.Model):
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, verbose_name='分类')
     tag = models.ManyToManyField(Tag, verbose_name='标签')
+    pv = models.PositiveIntegerField(default=1)
+    uv = models.PositiveIntegerField(default=1)
     owner = models.ForeignKey(
         User, on_delete=models.CASCADE, verbose_name='作者')
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
@@ -115,6 +117,10 @@ class Post(models.Model):
     def latest_posts(cls):
         queryset = cls.objects.filter(status=Post.STATUS_NORMAL)
         return queryset
+
+    @classmethod
+    def hot_posts(cls):
+        return cls.objects.filter(status=cls.STATUS_NORMAL).order_by('-pv')
 
     def __str__(self):
         return self.title
