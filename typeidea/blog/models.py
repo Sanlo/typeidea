@@ -115,7 +115,7 @@ class Post(models.Model):
 
     @classmethod
     def latest_posts(cls):
-        queryset = cls.objects.filter(status=Post.STATUS_NORMAL)
+        queryset = cls.objects.filter(status=cls.STATUS_NORMAL)
         return queryset
 
     @classmethod
