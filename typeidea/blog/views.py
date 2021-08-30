@@ -2,7 +2,7 @@ from django.db.models import Q
 from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404
 
-from .models import Post, Tag, Category
+from .models import Post, Tag, Category, User
 from config.models import SideBar
 
 
@@ -37,6 +37,13 @@ class SearchView(IndexView):
         if not keyword:
             return queryset
         return queryset.filter(Q(title__icontains=keyword) | Q(desc__icontains=keyword))
+
+
+class AuthorView(IndexView):
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        author_id = self.kwargs.get('owner_id')
+        return queryset.filter(owner_id=author_id)
 
 
 class CategoryView(IndexView):
