@@ -1,1 +1,3 @@
-typeidea/typeidea/templates/blog
+typeidea/typeidea/themes/default
+typeidea/typeidea/themes/bootstrap/templates/blog
+typeidea/typeidea/themes/bootstrap/templates/config

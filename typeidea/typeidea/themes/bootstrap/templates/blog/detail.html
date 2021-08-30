@@ -1,0 +1,23 @@
+{% extends "./base.html" %}
+
+{% block title %}
+    {{ post.title }}
+{% endblock %}
+
+{% block main %}
+    {% if post %}
+        <h1>{{ post.title }}</h1>
+        <div>
+            <span class="card-link">分类：{{ post.category.name }}</span>
+            <span class="card-link">作者：{{ post.owner.username }}</span>
+            <span class="card-link">标签：
+                {% for tag in post.tag.all %}
+                    <a class="badge badge-pill badge-info" href="{% url 'tag-list' tag.id %}">{{ tag.name }}</a>
+                {% endfor %}
+            </span>
+            <span class="card-link">创建时间：{{post.created_time}}</span>
+        </div>
+        <hr />
+        <p>{{ post.content }}</p>
+    {% endif %}
+{% endblock %}

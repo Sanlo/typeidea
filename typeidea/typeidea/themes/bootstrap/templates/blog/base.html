@@ -1,0 +1,87 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{% block title %}{% endblock %}- 博客系统</title>
+        <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}" />
+        <script src="{% static 'bootstrap.bundle.min.js' %}"></script>
+        <style>
+            .post {
+                margin-bottom: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- HEADER -->
+        <div class="container head">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <a class="navbar-brand" href="/">首页</a>
+                <div
+                    class="collapse navbar-collapse" id="navbarSupportedContent"
+                >
+                    <ul class="navbar-nav mr-auto">
+                    {% for cate in navs %}
+                        <a class="nav-link" href="{% url 'category-list' cate.id %}">{{ cate.name }}</a>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                    <form class="form-inline my-2 my-lg-0">
+                        <input
+                            class="form-control mr-sm-2"
+                            type="search"
+                            placeholder="Search"
+                            aria-label="Search"
+                        />
+                        <button class="btn btn-success" type="submit">
+                            搜索
+                        </button>
+                    </form>
+                </div>
+            </nav>
+            <div class="jumbotron bg-light">
+                <h1 class="display-4">TypeIdea</h1>
+                <p class="lead">基于Django的模块</p>
+            </div>
+            <hr />
+        </div>
+
+        <!-- Main content -->
+        <div class="container main">
+            <div class="row">
+                <div class="col-9 post-list">
+                    {% block main %}
+                    {% endblock %}
+                </div>
+                <!-- Sidebar -->
+                <div class="col-3">
+                    {% for sidebar in sidebars %}
+                    <div class="card sidebar">
+                        <div class="card-body">
+                            <h4 class="card-title">{{ sidebar.title }}</h4>
+                            <p>{{ sidebar.content_html }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <hr />
+                <nav class="nav category mb-3">
+                    {% for cate in categories %}
+                        <a href="{% url 'category-list' cate.id %}">{{ cate.name }}</a>
+                    {% endfor %}
+                </nav>
+            </div>
+            <div class="container power mb-4">
+                <span class="text-muted">Powered by Django</span>
+            </div>
+        </footer>
+    </body>
+</html>
