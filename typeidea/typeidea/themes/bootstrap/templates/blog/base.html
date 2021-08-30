@@ -60,6 +60,7 @@
                 </div>
                 <!-- Sidebar -->
                 <div class="col-3">
+                    {% block sideber %}
                     {% for sidebar in sidebars %}
                     <div class="card sidebar">
                         <div class="card-body">
@@ -68,6 +69,7 @@
                         </div>
                     </div>
                     {% endfor %}
+                    {% endblock %}
                 </div>
             </div>
         </div>
