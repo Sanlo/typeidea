@@ -1,7 +1,9 @@
 {% extends "blog/base.html" %}
 
+{% load comment_block %}
+
 {% block main %}
-<table class="table">
+<table class="table table-hover table-bordered">
     <thead>
         <tr>
             <th scope="col">#</th>
@@ -19,4 +21,7 @@
         {% endfor %}
     </tbody>
 </table>
+
+{% comment_block request.path %}
+
 {% endblock %}

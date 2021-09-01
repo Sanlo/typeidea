@@ -4,6 +4,8 @@ from django.shortcuts import get_object_or_404
 
 from .models import Post, Tag, Category, User
 from config.models import SideBar
+from comment.forms import CommentForm
+from comment.models import Comment
 
 
 class CommonViewMixin:
@@ -82,7 +84,7 @@ class TagView(IndexView):
 
 class PostDetailView(CommonViewMixin, DetailView):
     queryset = Post.latest_posts()
-    paginate_by = 5
-    context_object_name = 'post'
     template_name = 'blog/detail.html'
+    context_object_name = 'post'
     pk_url_kwarg = 'post_id'
+    paginate_by = 5
