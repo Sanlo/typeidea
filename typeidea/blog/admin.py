@@ -100,21 +100,6 @@ class PostAdmin(BaseOwnerAdmin):
         return format_html('<a href="{}">编辑</a>', reverse('cus_admin:blog_post_change', args=(obj.id, )))
     operator.short_description = '操作'
 
-    def save_model(self, request, obj, form, change):
-        obj.owner = request.user
-        return super(PostAdmin, self).save_model(request, obj, form, change)
-
-    def get_queryset(self, request):
-        qs = super(PostAdmin, self).get_queryset(request)
-        return qs.filter(owner=request.user)
-
-    class Media:
-        # css = {
-        #     'all': ('https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css', ),
-        # }
-        js = (
-            'https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js',)
-
 
 @admin.register(LogEntry, site=custom_site)
 class LogEntryAdmin(admin.ModelAdmin):

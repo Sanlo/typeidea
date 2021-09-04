@@ -61,7 +61,7 @@ class SideBar(models.Model):
         return cls.objects.filter(status=cls.STATUS_SHOW)
 
     @property
-    def conten_html(self):
+    def content_html(self):
         """ 直接渲染到模板 """
         from blog.models import Post
         from comment.models import Comment
@@ -90,7 +90,7 @@ class SideBar(models.Model):
         return result
 
     def __str__(self):
-        return self.name
+        return self.title
 
     class Meta:
         verbose_name = verbose_name_plural = '侧边栏'

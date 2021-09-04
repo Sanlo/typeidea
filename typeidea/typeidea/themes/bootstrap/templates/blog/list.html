@@ -26,7 +26,7 @@
                     <a class="badge badge-pill badge-info" href="{% url 'tag-list' tag.id %}">{{ tag.name }}</a>
                 {% endfor %}
             </span>
-            <p class="card-text">{{ post.desc }} <a href="#">完整内容</a></p>
+            <p class="card-text">{{ post.desc }} <a href="{% url 'post-detail' post.id %}">完整内容</a></p>
         </div>
     </div>
     {% endfor %}

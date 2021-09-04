@@ -1,9 +1,16 @@
 {% extends "./base.html" %}
 
 {% load comment_block %}
+{% load static %}
 
 {% block title %}
     {{ post.title }}
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'highlight/styles/default.min.css' %}">
+<script src="{% static 'highlight/highlight.min.js' %}"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 {% endblock %}
 
 {% block main %}
@@ -20,7 +27,11 @@
             <span class="card-link">创建时间：{{post.created_time}}</span>
         </div>
         <hr />
-        <p>{{ post.content }}</p>
+        <p>
+            {% autoescape off %}
+            {{ post.content_html }}
+            {% endautoescape %}
+        </p>
     {% endif %}
 
     {% comment_block request.path %}

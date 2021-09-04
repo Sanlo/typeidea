@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+import mistune
 
 
 class Category(models.Model):
@@ -86,6 +87,12 @@ class Post(models.Model):
     owner = models.ForeignKey(
         User, on_delete=models.CASCADE, verbose_name='作者')
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    content_html = models.TextField(
+        verbose_name='正文html代码', blank=True, editable=False)
+
+    def save(self, *args, **kwargs):
+        self.content_html = mistune.markdown(self.content)
+        super().save(*args, **kwargs)
 
     @staticmethod
     def get_by_tag(tag_id):
