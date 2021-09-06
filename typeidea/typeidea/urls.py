@@ -14,14 +14,21 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, re_path
+from django.urls import path, re_path, include
+from rest_framework.routers import DefaultRouter
+from rest_framework.documentation import include_docs_urls
 
 from blog.views import (
     IndexView, CategoryView, TagView, PostDetailView, SearchView, AuthorView
 )
+from blog.apis import PostViewSet, CategoryViewSet
 from config.views import LinkListView
 from comment.views import CommentView
 from .custom_site import custom_site
+
+router = DefaultRouter()
+router.register(r'post', PostViewSet, basename='api-post')
+router.register(r'category', CategoryViewSet, basename='api-category')
 
 
 urlpatterns = [
@@ -38,4 +45,6 @@ urlpatterns = [
     path('comment/', CommentView.as_view(), name='comment'),
     path('super_admin/', admin.site.urls, name='super-admin'),
     path('admin/', custom_site.urls, name='admin'),
+    path('api/', include(router.urls)),
+    path('api/docs', include_docs_urls(title='tyoeidea apis')),
 ]
