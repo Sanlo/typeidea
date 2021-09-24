@@ -18,3 +18,5 @@ DATABASES = {
 ADMINS = MANAGERS = (
     ('sanlozhang', '940072028@qq.com')
 )
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_files/')

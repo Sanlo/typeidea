@@ -2,25 +2,30 @@ import os
 from datetime import datetime
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from invoke import task
+from fabric.tasks import task
 
-roledefs = {
-    'myserver': ['sanlo@192.168.0.103:22'],
-}
 PROJECT_NAME = 'typeidea'
 SETTINGS_BASE = 'typeidea/typeidea/settings/base.py'
-DEPOLY_PATH = '/home/sanlo/.local/share/virtualenvs/typeidea-env-d55Pb6h3'
-VENV_ACTIVATE = os.path.join(DEPOLY_PATH, 'bin', 'activate')
+DEPLOY_PATH = '/home/sanlo/venvs/typeidea-env'
+VENV_ACTIVATE = os.path.join(DEPLOY_PATH, 'bin', 'activate')
 PYPI_HOST = '127.0.0.1'
-PYPI_INDEX = 'http://127.0.0.1/simple'
+PYPI_INDEX = 'http://127.0.0.1:18080/simple'
 PROCESS_COUNT = 2
 PORT_PREFIX = 909
 
 
 @task
+def hello(c):
+    result = c.run('echo $SHELL')
+    user_shell = result.stdout.strip('\n')
+    c.put('./tmp/supervisord.conf', '/home/sanlo/supervisord.conf')
+
+
+@task
 def build(c, version=None, bytescode=False):
-    '''
-    Usage: fab2 build --version 1.4
+    ''' build TYPEIDEA package
+
+    Usage: fab -H centos --prompt-for-login-password build --version 0.2
     '''
     if not version:
         version = datetime().now().strftime('%m%d%H%M%S')
@@ -28,33 +33,34 @@ def build(c, version=None, bytescode=False):
     _version = _Version()
     _version.set(['setup.py', SETTINGS_BASE], version)
 
-    result = c.run('echo heloo', hide=True)
+    result = c.run('echo $SHELL', hide=True)
     user_shell = result.stdout.strip('\n')
-    c.run('python setup.py bdist_wheel upload -r centos',
-          warn=True, shell=user_shell)
+    _ensure_virtualenv(c)
+    c.local('python setup.py bdist_wheel upload -r centos', replace_env=False)
 
     _version.revert()
 
 
 @task
-def deploy(c, version, profile):
-    ''' 部署指定版本
+def deploy(c, version, profile='develop'):
+    ''' remote deploy to centos server
+    部署指定版本
         1. 确认虚拟环境已经配置
         2. 激活虚拟环境
         3. 安装软件包
         4. 启动
         Usage:
-            fab -H myserver -S ssh_config deploy 1.4 product
+            fab -H centos --prompt-for-login-password deploy --version 0.2 --profile develop
     '''
     _ensure_virtualenv(c)
     package_name = PROJECT_NAME + '==' + version
-    with c.prefix('source %s' % VENV_ACTIVATE):
-        c.run('pip install %s -i %s --trusted-host %s' % (
+    with c.prefix('cd %s' % DEPLOY_PATH):
+        c.run('pipenv run pip install %s -i %s --trusted-host %s' % (
             package_name,
             PYPI_INDEX,
             PYPI_HOST,
         ))
-        # _reload_supervisoird(c, DEPLOY_PATH, profile)
+        _reload_supervisoird(c, DEPLOY_PATH, profile)
 
 
 class _Version:
@@ -81,14 +87,15 @@ class _Version:
 
 
 def _ensure_virtualenv(c):
-    if c.run('test -f %s' % VENV_ACTIVATE, warn=True).ok:
+    if c.run('test -f %s/Pipfile' % DEPLOY_PATH, warn=True).ok:
         return True
 
-    if c.run('test -f %s' % DEPOLY_PATH, warn=True).failed:
-        c.run('mkdir -p %s' % DEPOLY_PATH)
+    if c.run('test -d %s' % DEPLOY_PATH, warn=True).failed:
+        c.run('mkdir -p %s' % DEPLOY_PATH)
 
-    c.run('python -m venv %s' % DEPOLY_PATH)
-    c.run('mkdir -p %s/tmp' % DEPOLY_PATH)
+    with c.prefix('cd %s' % DEPLOY_PATH):
+        c.run('pipenv install django')
+    c.run('mkdir -p %s/tmp' % DEPLOY_PATH)
 
 
 def _upload_conf(c, deploy_path, profile):
@@ -104,16 +111,20 @@ def _upload_conf(c, deploy_path, profile):
         'deploy_path': deploy_path,
     }
     content = template.render(**context)
-    tmp_file = '/tmp/supervisord.conf'
+    tmp_file = './tmp/supervisord.conf'
     with open(tmp_file, 'wb') as f:
         f.write(content.encode('utf-8'))
 
     destination = os.path.join(deploy_path, 'supervisord.conf')
-    c.put(tmp_file, destination)
+    print(destination)
+    # c.put(tmp_file, destination)
+    c.put(tmp_file, '/home/sanlo/venvs/typeidea-env/supervisord.conf')
 
 
 def _reload_supervisoird(c, deploy_path, profile):
     _upload_conf(c, deploy_path, profile)
-    c.run('supervisorctl -c %s/supervisord.conf shutdown' %
-          deploy_path, warn=True)
-    c.run('supervisord -c %s/supervisord.conf' % deploy_path)
+    with c.prefix('cd %s' % DEPLOY_PATH):
+        print('====================CTL START==================================')
+        c.run('pipenv run supervisorctl -c supervisord.conf shutdown', warn=True)
+        print('====================CTL END==================================')
+        c.run('pipenv run supervisorctl -c supervisord.conf start all')
