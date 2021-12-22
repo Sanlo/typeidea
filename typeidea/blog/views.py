@@ -87,7 +87,7 @@ class TagView(IndexView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         tag_id = self.kwargs.get('tag_id')
-        tag = get_object_or_404(Tag, page_kwarg=tag_id)
+        tag = get_object_or_404(Tag, pk=tag_id)
         context.update({
             'tag': tag,
         })
@@ -97,7 +97,7 @@ class TagView(IndexView):
         """ override """
         queryset = super().get_queryset()
         tag_id = self.kwargs.get('tag_id')
-        return queryset.filter(tag_id=tag_id)
+        return queryset.filter(tag__id=tag_id)
 
 
 class PostDetailView(CommonViewMixin, DetailView):
